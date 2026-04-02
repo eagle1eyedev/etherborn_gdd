@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETHERBORN — Войната на Мирите · GDD v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0f;--card:#161620;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e8e4d8;--muted:#8a8578;--faint:#4a4840;
+  --gold:#c8a85a;--gold2:#e8c878;--gold-dim:rgba(200,168,90,0.15);
+  --pact:#7eb8e8;--pact-dim:rgba(126,184,232,0.10);--pact-border:rgba(126,184,232,0.30);
+  --order:#e8583a;--order-dim:rgba(232,88,58,0.08);--order-border:rgba(232,88,58,0.28);
+  --fey:#7eb8e8;--ghost:#a87dc8;--troll:#8a9878;--root:#6ab878;
+  --ember:#e8583a;--tidal:#3ab8c8;--bone:#c8b898;--moon:#c8c0e8;
+  --mana:#5880e0;--rage:#e04040;--energy:#e0a820;--focus:#40c080;--runic:#a060e0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 15% 20%,rgba(200,168,90,.4) 0%,transparent 100%),radial-gradient(1px 1px at 45% 8%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1px 1px at 72% 32%,rgba(200,168,90,.3) 0%,transparent 100%),radial-gradient(1px 1px at 88% 12%,rgba(255,255,255,.4) 0%,transparent 100%),radial-gradient(1px 1px at 30% 60%,rgba(255,255,255,.2) 0%,transparent 100%),radial-gradient(1px 1px at 60% 75%,rgba(200,168,90,.2) 0%,transparent 100%),radial-gradient(2px 2px at 8% 85%,rgba(200,168,90,.35) 0%,transparent 100%),radial-gradient(1px 1px at 55% 92%,rgba(255,255,255,.15) 0%,transparent 100%);pointer-events:none;z-index:0}
+.wrapper{max-width:1200px;margin:0 auto;padding:0 32px 120px;position:relative;z-index:1}
+
+/* HERO */
+.hero{text-align:center;padding:80px 0 60px}
+.hero::after{content:'';display:block;width:320px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto}
+.hero-eyebrow{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;opacity:.8}
+.hero-title{font-family:'Cinzel Decorative',serif;font-size:clamp(42px,8vw,88px);font-weight:900;line-height:1;background:linear-gradient(135deg,#c8a85a 0%,#f0d890 40%,#c8a85a 70%,#a87830 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.hero-subtitle{font-family:'Cinzel',serif;font-size:clamp(14px,2.5vw,20px);color:var(--muted);letter-spacing:6px;text-transform:uppercase;margin-bottom:40px}
+.hero-desc{max-width:680px;margin:0 auto 48px;font-size:18px;color:var(--text);font-style:italic;opacity:.85}
+
+/* SECTIONS */
+.section{margin-top:80px}
+.section-header{display:flex;align-items:center;gap:20px;margin-bottom:40px}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent)}
+.section-line.right{background:linear-gradient(270deg,var(--gold-dim),transparent)}
+.section-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+
+/* LORE BOX */
+.lore-box{border:1px solid rgba(200,168,90,.2);background:linear-gradient(135deg,rgba(200,168,90,.04),rgba(168,125,48,.02));padding:32px 36px;margin-bottom:40px;position:relative}
+.lore-box::before,.lore-box::after{content:'✦';position:absolute;color:var(--gold);font-size:12px;opacity:.4}
+.lore-box::before{top:12px;left:16px}.lore-box::after{bottom:12px;right:16px}
+.lore-box p{font-style:italic;font-size:16px;color:var(--text);opacity:.8;line-height:1.8}
+.lore-box p+p{margin-top:12px}
+
+/* FACTION BANNER */
+.faction-banner{display:grid;grid-template-columns:1fr auto 1fr;margin-bottom:48px;border:1px solid var(--border)}
+.faction-side{padding:28px 32px}
+.faction-side.pact{background:var(--pact-dim);border-right:1px solid var(--border)}
+.faction-side.order{background:var(--order-dim);border-left:1px solid var(--border)}
+.faction-vs{display:flex;align-items:center;justify-content:center;padding:0 24px;background:var(--card)}
+.faction-vs-circle{width:56px;height:56px;border-radius:50%;border:1px solid rgba(200,168,90,.35);background:rgba(200,168,90,.06);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:1px}
+.faction-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;opacity:.7}
+.pact .faction-tag{color:var(--pact)}.order .faction-tag{color:var(--order)}
+.faction-name-big{font-family:'Cinzel',serif;font-size:22px;font-weight:700;margin-bottom:8px}
+.pact .faction-name-big{color:#a8d8f8}.order .faction-name-big{color:#f8a888}
+.faction-lore-text{font-style:italic;font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.faction-races-inline{display:flex;flex-wrap:wrap;gap:8px}
+.faction-race-pill{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:4px 10px;border-radius:2px;border:1px solid}
+.pact .faction-race-pill{color:var(--pact);border-color:var(--pact-border);background:rgba(126,184,232,.06)}
+.order .faction-race-pill{color:var(--order);border-color:var(--order-border);background:rgba(232,88,58,.06)}
+.faction-role-note{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.5}
+
+/* PvP GRID */
+.pvp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.pvp-card{padding:24px;border:1px solid var(--border)}
+.pvp-card.pact-card{background:var(--pact-dim);border-color:var(--pact-border)}
+.pvp-card.order-card{background:var(--order-dim);border-color:var(--order-border)}
+.pvp-card h3{font-family:'Cinzel',serif;font-size:15px;margin-bottom:12px;font-weight:700}
+.pact-card h3{color:#a8d8f8}.order-card h3{color:#f8a888}
+.pvp-card ul{list-style:none}
+.pvp-card li{font-size:14px;color:var(--text);opacity:.85;padding:5px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.pvp-card li:last-child{border-bottom:none}
+.pvp-card li::before{content:'·';margin-right:8px;opacity:.5}
+.pact-card li::before{color:var(--pact)}.order-card li::before{color:var(--order)}
+
+/* GUILD BOX */
+.guild-rule-box{background:var(--card);border:1px solid var(--border2);padding:24px 28px;margin-bottom:16px}
+.guild-rule-box h3{font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-bottom:12px;font-weight:700;letter-spacing:1px}
+.guild-rule-box p{font-size:15px;color:var(--text);opacity:.82;line-height:1.75}
+
+/* FACTION BADGE */
+.faction-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-bottom:6px}
+.faction-badge.pact{color:var(--pact);border:1px solid var(--pact-border);background:rgba(126,184,232,.07)}
+.faction-badge.order{color:var(--order);border:1px solid var(--order-border);background:rgba(232,88,58,.07)}
+
+/* RACE CARDS */
+.races-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:2px}
+.race-card{background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color .3s}
+.race-card:hover{border-color:var(--border2)}
+.race-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--race-color,var(--gold));opacity:.7}
+.race-card.pact-card{border-left:2px solid rgba(126,184,232,.18)}
+.race-card.order-card{border-left:2px solid rgba(232,88,58,.18)}
+.race-header{padding:28px 28px 20px;display:flex;align-items:flex-start;gap:20px;border-bottom:1px solid var(--border)}
+.race-icon{width:56px;height:56px;border-radius:8px;background:var(--race-bg,rgba(200,168,90,.1));border:1px solid var(--race-color,var(--gold));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.race-name{font-family:'Cinzel',serif;font-size:20px;color:var(--race-color,var(--gold));font-weight:700;margin-bottom:4px}
+.race-tagline{font-size:14px;color:var(--muted);font-style:italic}
+.race-resource-pill{margin-left:auto;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;padding:4px 10px;border-radius:20px;border:1px solid;white-space:nowrap;align-self:flex-start;margin-top:4px}
+.race-body{padding:20px 28px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px 24px}
+.race-stat-block h4{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--race-color,var(--gold));margin-bottom:8px;opacity:.7}
+.race-stat-block p,.race-stat-block li{font-size:14px;color:var(--text);opacity:.85;line-height:1.5}
+.race-stat-block ul{list-style:none}
+.race-stat-block li::before{content:'·';color:var(--race-color,var(--gold));margin-right:6px;opacity:.7}
+.stat-bars{display:flex;flex-direction:column;gap:6px}
+.stat-row{display:flex;align-items:center;gap:8px}
+.stat-label{font-size:11px;color:var(--muted);width:68px;flex-shrink:0}
+.stat-bar-bg{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px}
+.stat-bar-fill{height:100%;border-radius:2px;background:var(--race-color,var(--gold))}
+.race-lore{grid-column:1/-1;font-style:italic;font-size:14px;color:var(--muted);border-top:1px solid var(--border);padding-top:14px;margin-top:4px}
+
+/* RESOURCE LEGEND */
+.resource-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:32px}
+.res-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border2);border-radius:4px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px}
+.res-dot{width:10px;height:10px;border-radius:50%}
+
+/* LEVEL TABLE */
+.level-table{width:100%;border-collapse:collapse}
+.level-table th{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border2);opacity:.8}
+.level-table td{padding:10px 16px;font-size:14px;color:var(--text);border-bottom:1px solid var(--border);vertical-align:top}
+.level-table tr:hover td{background:rgba(200,168,90,.03)}
+.level-tier{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:1px}
+.milestone-tag{display:inline-block;padding:2px 8px;border-radius:3px;background:var(--gold-dim);border:1px solid rgba(200,168,90,.3);font-size:11px;color:var(--gold2);font-family:'Cinzel',serif}
+
+/* CURRENCY */
+.currency-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.currency-card{background:var(--card);border:1px solid var(--border);padding:24px}
+.currency-name{font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);margin-bottom:8px}
+.currency-symbol{font-size:32px;line-height:1;margin-bottom:12px}
+.currency-desc{font-size:14px;color:var(--muted)}
+
+/* MOUNTS */
+.mounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.mount-card{background:var(--card);border:1px solid var(--border);padding:22px;position:relative;overflow:hidden}
+.mount-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--race-color,var(--gold));opacity:.5}
+.mount-name{font-family:'Cinzel',serif;font-size:15px;color:var(--race-color,var(--gold));margin-bottom:4px}
+.mount-race{font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:10px;font-family:'Cinzel',serif}
+.mount-desc{font-size:13px;color:var(--text);opacity:.8;margin-bottom:10px}
+.mount-stat{font-size:12px;color:var(--muted)}
+.mount-stat span{color:var(--gold2);font-family:'Cinzel',serif}
+
+/* QUESTS */
+.quest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.quest-card{background:var(--card);border:1px solid var(--border);padding:22px}
+.quest-type{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--quest-color,var(--gold));text-transform:uppercase;margin-bottom:8px}
+.quest-name{font-family:'Cinzel',serif;font-size:17px;color:var(--text);margin-bottom:10px}
+.quest-desc{font-size:14px;color:var(--muted);margin-bottom:12px;font-style:italic}
+.quest-reward{font-size:13px;color:var(--text);padding-top:10px;border-top:1px solid var(--border)}
+.quest-reward span{color:var(--gold2);font-family:'Cinzel',serif}
+
+/* MECHANICS */
+.mechanic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:16px}
+.mechanic-card{background:var(--card);border:1px solid var(--border);padding:24px}
+.mechanic-icon{font-size:24px;margin-bottom:12px}
+.mechanic-name{font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-bottom:8px;font-weight:700}
+.mechanic-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+.ornament{text-align:center;color:var(--gold);font-size:18px;margin:48px 0;opacity:.4;letter-spacing:8px}
+.doc-footer{text-align:center;padding:60px 0 20px;border-top:1px solid var(--border);font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--faint)}
+
+@media(max-width:700px){.wrapper{padding:0 16px 80px}.races-grid{grid-template-columns:1fr}.faction-banner{grid-template-columns:1fr}.faction-vs{padding:16px}.currency-grid{grid-template-columns:1fr}.pvp-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="hero">
+  <div class="hero-eyebrow">✦ Game Design Document · Version 2.0 ✦</div>
+  <h1 class="hero-title">ETHERBORN</h1>
+  <div class="hero-subtitle">Войната на Мирите</div>
+  <p class="hero-desc">Тъмно фентъзи MMORPG — две фракции, осем народа, един свят разкъсан между Светлия Ефир и Мъглявия Вал. Смъртта не е край. Войната няма финал.</p>
+</div>
+
+<div class="lore-box">
+  <p>Когато Ефирната Завеса се разкъса, мъглата погълна първите градове за часове. Осемте народа не само се борят за оцеляване — те са разделени от фундаментален въпрос: трябва ли двата свята да останат разделени, или слиянието им е неизбежното бъдеще?</p>
+  <p>Отговорът е разцепил света на две вечно воюващи фракции: <strong style="color:#a8d8f8">Пактът на Ефира</strong> — пазителите на Светлия план, срещу <strong style="color:#f8a888">Орденът на Вала</strong> — вярващите в слиянието. Не е битка между добро и зло. Това е война между две визии за същността на реалността.</p>
+</div>
+
+<!-- ══ ФРАКЦИИ ══ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Двете Фракции · Сърцето на Конфликта</div>
+    <div class="section-line right"></div>
+  </div>
+
+  <div class="faction-banner">
+    <div class="faction-side pact">
+      <div class="faction-tag">✦ Фракция I</div>
+      <div class="faction-name-big">Пактът на Ефира</div>
+      <div class="faction-lore-text">Пазители на Светлия план — обединени от вярата, че разделението на световете е свещено. Те виждат Мъглявия Вал като болест, Ефирната Завеса — като бариера, която трябва да бъде поправена на всяка цена.</div>
+      <div class="faction-races-inline">
+        <span class="faction-race-pill">🧚 Феите на Ефира</span>
+        <span class="faction-race-pill">🧌 Каменните Тролове</span>
+        <span class="faction-race-pill">🌿 Коренните</span>
+        <span class="faction-race-pill">🌊 Тидалите</span>
+      </div>
+      <div class="faction-role-note">Стил на игра: Защитен · Support-ориентиран · Контрол на бойното поле · Висока устойчивост</div>
+    </div>
+    <div class="faction-vs"><div class="faction-vs-circle">VS</div></div>
+    <div class="faction-side order">
+      <div class="faction-tag">◈ Фракция II</div>
+      <div class="faction-name-big">Орденът на Вала</div>
+      <div class="faction-lore-text">Потомци на тъмнината — убедени, че Мъглявият Вал е бъдещето и двата свята трябва да се слеят. Не са злодеи — те вярват, че едно обединено царство ще донесе истинска сила и свобода.</div>
+      <div class="faction-races-inline">
+        <span class="faction-race-pill">👻 Призрачните</span>
+        <span class="faction-race-pill">🔥 Пепелните</span>
+        <span class="faction-race-pill">🦴 Пустошниците</span>
+        <span class="faction-race-pill">✨ Луносветните</span>
+      </div>
+      <div class="faction-role-note">Стил на игра: Агресивен · Burst-базиран · Стелт и изненада · Висока щета и мобилност</div>
+    </div>
+  </div>
+
+  <div class="pvp-grid">
+    <div class="pvp-card pact-card">
+      <h3>🛡 Пактът на Ефира — Фракционни Правила</h3>
+      <ul>
+        <li>Феи, Тролове, Коренни и Тидали са <em>постоянни съюзници</em> — не можеш да ги атакуваш никъде на картата</li>
+        <li>Всички раси от Ордена на Вала са враждебни в спорни зони</li>
+        <li>Гилдиите са строго расово чисти — само раси от Пакта могат да се обединяват</li>
+        <li>Пактът контролира Ефирните Кули на светлата страна на картата</li>
+        <li>Фракционна репутация: „Ефирен Защитник" — расте с PvP победи срещу Ордена</li>
+        <li>Пактови играчи имат синьо-златен символ ✦ над главата в неутрални зони</li>
+        <li>Фракционен доспех: синьо-кристални тонове с ефирни гравюри</li>
+        <li>Фракционен боен вик: „За Завесата! За Светлото!"</li>
+      </ul>
+    </div>
+    <div class="pvp-card order-card">
+      <h3>🔥 Орденът на Вала — Фракционни Правила</h3>
+      <ul>
+        <li>Призрачни, Пепелни, Пустошници и Луносветни са <em>постоянни съюзници</em> — не можеш да ги атакуваш</li>
+        <li>Всички раси от Пакта на Ефира са враждебни в спорни зони</li>
+        <li>Гилдиите са строго расово чисти — само раси от Ордена могат да се обединяват</li>
+        <li>Орденът контролира Вал-кулите и тъмните части на картата</li>
+        <li>Фракционна репутация: „Вал-Завоевател" — расте с PvP победи срещу Пакта</li>
+        <li>Орденови играчи имат огнено-пурпурен символ ◈ над главата в неутрални зони</li>
+        <li>Фракционен доспех: черно-огнени тонове с Вал-руни</li>
+        <li>Фракционен боен вик: „Завесата ще падне! Валът е вечен!"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guild-rule-box">
+    <h3>⚔ Гилдии, Алианси и Фракционна Политика</h3>
+    <p>Гилдиите в Etherborn са строго расово чисти — само играчи от една и съща раса могат да членуват в една гилдия. Въпреки това, в рамките на своята фракция, расите могат да формират <strong style="color:var(--gold2)">Фракционен Алианс</strong> — до 4 гилдии (по една от всяка раса на фракцията) се обединяват за мегарейдове и мащабни PvP операции. Единственото изключение от фракционната враждебност: в Неутралната Зона (Ефирния Праг) играчите от двете фракции могат да търгуват и да комуникират в Общия Чат, но не могат да се групират или да членуват в общи гилдии. При Будителския Рейд — временно примирие, PvP е деактивирано за 90 минути.</p>
+  </div>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- ══ РАСИ ══ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Осемте Народа</div>
+    <div class="section-line right"></div>
+  </div>
+
+  <div class="resource-legend">
+    <div class="res-badge"><div class="res-dot" style="background:var(--mana)"></div>Мана</div>
+    <div class="res-badge"><div class="res-dot" style="background:var(--rage)"></div>Ярост</div>
+    <div class="res-badge"><div class="res-dot" style="background:var(--energy)"></div>Енергия</div>
+    <div class="res-badge"><div class="res-dot" style="background:var(--focus)"></div>Фокус</div>
+    <div class="res-badge"><div class="res-dot" style="background:var(--runic)"></div>Рунна Сила</div>
+    <div class="res-badge" style="border-color:var(--pact-border)"><div class="res-dot" style="background:var(--pact)"></div>Пакт на Ефира</div>
+    <div class="res-badge" style="border-color:var(--order-border)"><div class="res-dot" style="background:var(--order)"></div>Орден на Вала</div>
+  </div>
+
+  <div class="races-grid">
+
+    <!-- ФЕИ — ПАКТ -->
+    <div class="race-card pact-card" style="--race-color:var(--fey);--race-bg:rgba(126,184,232,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🧚</div>
+        <div>
+          <div class="faction-badge pact">✦ Пакт на Ефира</div>
+          <div class="race-name">Феите на Ефира</div>
+          <div class="race-tagline">Крилати пазители на Светлия план</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--mana);border-color:var(--mana)">МАНА</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:25%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:88%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:40%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:95%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Поддръжка</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:90%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Ефирна стрела (базова)</li>
+            <li>Нв. 10 — Полет (пасивен)</li>
+            <li>Нв. 20 — Кристален щит</li>
+            <li>Нв. 40 — Масово изцеление</li>
+            <li>Нв. 60 — Ефирен портал</li>
+            <li>Нв. 80 — Завеса от светлина</li>
+            <li>Нв. 100 — Пълно Преображение</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Копринени роби с перца</li>
+            <li>21–40 → Кристален хитон</li>
+            <li>41–60 → Светещи ефирни доспехи</li>
+            <li>61–80 → Звезден кираса</li>
+            <li>81–100 → Небесен Регалий (Пакт синьо)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Левитация — никога не приземяват напълно; -щета от падане, +15% скорост в ефирни зони. Срещу Ордена: +10% магическа щета срещу наземни врагове.</p>
+        </div>
+        <div class="race-lore">„Ние не летим — ние просто отказваме да паднем." — Поговорка на Ефирните острови</div>
+      </div>
+    </div>
+
+    <!-- ПРИЗРАЧНИТЕ — ОРДЕН -->
+    <div class="race-card order-card" style="--race-color:var(--ghost);--race-bg:rgba(168,125,200,0.08)">
+      <div class="race-header">
+        <div class="race-icon">👻</div>
+        <div>
+          <div class="faction-badge order">◈ Орден на Вала</div>
+          <div class="race-name">Призрачните</div>
+          <div class="race-tagline">Между живота и забравата</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--runic);border-color:var(--runic)">РУННА СИЛА</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:40%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:80%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:35%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:70%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Стелт</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Призрачен удар</li>
+            <li>Нв. 10 — Частична невидимост</li>
+            <li>Нв. 20 — Вал-скок (телепорт)</li>
+            <li>Нв. 40 — Проклятие на Мъглата</li>
+            <li>Нв. 60 — Пълна невидимост</li>
+            <li>Нв. 80 — Душекрадец</li>
+            <li>Нв. 100 — Ефирен Призрак</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Потъмнели парцали</li>
+            <li>21–40 → Мъглен наметал</li>
+            <li>41–60 → Духовни ризници</li>
+            <li>61–80 → Прозрачни Вал-доспехи</li>
+            <li>81–100 → Аспект на Забравата (Орден черно)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Двойно съществуване — виждат Вал без Резонанс; +30% щета от невидимост. Срещу Пакта: +15% щета срещу летящи цели (Феи) и +10% срещу осветени зони.</p>
+        </div>
+        <div class="race-lore">„Умрели веднъж. Оттогава само се забавляваме."</div>
+      </div>
+    </div>
+
+    <!-- ТРОЛОВЕ — ПАКТ -->
+    <div class="race-card pact-card" style="--race-color:var(--troll);--race-bg:rgba(138,152,120,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🧌</div>
+        <div>
+          <div class="faction-badge pact">✦ Пакт на Ефира</div>
+          <div class="race-name">Каменните Тролове</div>
+          <div class="race-tagline">Живата скала, пазителят на планините</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--rage);border-color:var(--rage)">ЯРОСТ</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:18%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:99%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:15%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Защита</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:98%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Каменен Юмрук</li>
+            <li>Нв. 10 — Земетресение (АоЕ)</li>
+            <li>Нв. 20 — Скална Кожа (бъф)</li>
+            <li>Нв. 40 — Укрепление (таунт)</li>
+            <li>Нв. 60 — Лавина</li>
+            <li>Нв. 80 — Форма на Планината</li>
+            <li>Нв. 100 — Незломим Исполин</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Груби каменни плочи</li>
+            <li>21–40 → Ковани планински брони</li>
+            <li>41–60 → Живяла скала (расте)</li>
+            <li>61–80 → Кристални рунни плочи</li>
+            <li>81–100 → Доспехи на Титана (Пакт кристали)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Каменна регенерация — неподвижни: 3% HP/сек. Имунни към отрова и кървене. Срещу Ордена: +20% устойчивост на Мъглявна щета и +15% защита срещу некроармии.</p>
+        </div>
+        <div class="race-lore">„Планините не се движат, за да покажат сила. Те просто чакат."</div>
+      </div>
+    </div>
+
+    <!-- ПЕПЕЛНИТЕ — ОРДЕН -->
+    <div class="race-card order-card" style="--race-color:var(--ember);--race-bg:rgba(232,88,58,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🔥</div>
+        <div>
+          <div class="faction-badge order">◈ Орден на Вала</div>
+          <div class="race-name">Пепелните</div>
+          <div class="race-tagline">Огненото подземие не ги освободи — то ги изкова</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--rage);border-color:var(--rage)">ЯРОСТ + МАНА</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:72%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:70%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Огн. Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:90%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Берсерк</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:95%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Огнена Плесница</li>
+            <li>Нв. 10 — Пепелен Вихър</li>
+            <li>Нв. 20 — Берсерк режим</li>
+            <li>Нв. 40 — Ядро на Магмата</li>
+            <li>Нв. 60 — Вулканичен Изблик</li>
+            <li>Нв. 80 — Форма на Феникс</li>
+            <li>Нв. 100 — Последен Изгарящ Апокалипсис</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Обгорели кожи</li>
+            <li>21–40 → Лавени плочи</li>
+            <li>41–60 → Ковани вулкански доспехи</li>
+            <li>61–80 → Феникс-ризница (гори)</li>
+            <li>81–100 → Въплъщение на Огнения Бог (Орден огън)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Пепелно Прераждане — смърт веднъж/30 мин. → 30% HP + AoE взрив. Имунни към огън. Срещу Пакта: +20% щета срещу щитирани цели (Феи-щит, Тролова Кожа).</p>
+        </div>
+        <div class="race-lore">„Огънят не разрушава — той трансформира."</div>
+      </div>
+    </div>
+
+    <!-- КОРЕННИ — ПАКТ -->
+    <div class="race-card pact-card" style="--race-color:var(--root);--race-bg:rgba(106,184,120,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🌿</div>
+        <div>
+          <div class="faction-badge pact">✦ Пакт на Ефира</div>
+          <div class="race-name">Коренните</div>
+          <div class="race-tagline">Гората и плътта — едно цяло</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--focus);border-color:var(--focus)">ФОКУС</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:55%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:62%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:78%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Лечение</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:96%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Призоваване</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:90%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Шипове (пасивна)</li>
+            <li>Нв. 10 — Призоваване: Вълк</li>
+            <li>Нв. 20 — Горска регенерация</li>
+            <li>Нв. 40 — Ентангълмент (корени)</li>
+            <li>Нв. 60 — Призоваване: Дух на Горите</li>
+            <li>Нв. 80 — Гора от Тела</li>
+            <li>Нв. 100 — Древен Страж</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Лишеи и листа</li>
+            <li>21–40 → Тъкана кора</li>
+            <li>41–60 → Живи растящи доспехи</li>
+            <li>61–80 → Цветен мантел на Гората</li>
+            <li>81–100 → Аспект на Горското Сърце (Пакт зелено)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Единство с природата — +25% мана рег. в гори; животните не атакуват. Срещу Ордена: коренните-умения имат +2 сек. срещу Пепелни и Пустошници и угасват огнени DoT.</p>
+        </div>
+        <div class="race-lore">„Едно дърво е самотно. Горa е непобедима."</div>
+      </div>
+    </div>
+
+    <!-- ПУСТОШНИЦИ — ОРДЕН -->
+    <div class="race-card order-card" style="--race-color:var(--bone);--race-bg:rgba(200,184,152,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🦴</div>
+        <div>
+          <div class="faction-badge order">◈ Орден на Вала</div>
+          <div class="race-name">Пустошниците</div>
+          <div class="race-tagline">Некроманти на границата — не зли, само сами</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--runic);border-color:var(--runic)">РУННА СИЛА</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:45%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:50%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:60%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Некромантия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:98%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Армия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Оживяване на Скелет</li>
+            <li>Нв. 10 — Костена Стена</li>
+            <li>Нв. 20 — Армия на Падналите (до 5)</li>
+            <li>Нв. 40 — Смъртоносна Аура</li>
+            <li>Нв. 60 — Лич-форма</li>
+            <li>Нв. 80 — Армия на Мрака (до 15)</li>
+            <li>Нв. 100 — Господар на Пустошта</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Скъсани погребални одежди</li>
+            <li>21–40 → Костени доспехи</li>
+            <li>41–60 → Рунни некро-кираси</li>
+            <li>61–80 → Лич-мантели (светещи)</li>
+            <li>81–100 → Пълен Лич-облик (Орден тъмно)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Жертвена Некромантия — при смърт миньоните: +50% щета/30 сек. Срещу Пакта: 25% шанс убитите Пактови играчи да станат временен скелетен миньон за 60 сек.</p>
+        </div>
+        <div class="race-lore">„Смъртта е просто начало на по-голяма армия."</div>
+      </div>
+    </div>
+
+    <!-- ТИДАЛИ — ПАКТ -->
+    <div class="race-card pact-card" style="--race-color:var(--tidal);--race-bg:rgba(58,184,200,0.08)">
+      <div class="race-header">
+        <div class="race-icon">🌊</div>
+        <div>
+          <div class="faction-badge pact">✦ Пакт на Ефира</div>
+          <div class="race-name">Тидалите</div>
+          <div class="race-tagline">От потопените градове, господари на приливите</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--mana);border-color:var(--mana)">МАНА</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:60%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:65%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Вода Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:92%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Мобилност</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:88%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Воден Бич</li>
+            <li>Нв. 10 — Водна Форма (под вода)</li>
+            <li>Нв. 20 — Прилив (knock-back)</li>
+            <li>Нв. 40 — Хайдрал Вихър</li>
+            <li>Нв. 60 — Призоваване на Прилива</li>
+            <li>Нв. 80 — Цунами</li>
+            <li>Нв. 100 — Пълен Господар на Приливите</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Морски черупки и нишки</li>
+            <li>21–40 → Коралови плочи</li>
+            <li>41–60 → Перлени кираси</li>
+            <li>61–80 → Водни доспехи (течни)</li>
+            <li>81–100 → Регалий на Дълбините (Пакт тюркоаз)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Амфибийна природа — дишат под вода, +50% скорост около вода. Срещу Ордена: водните умения угасват огнените DoT на Пепелните и потискат некроармии на Пустошниците.</p>
+        </div>
+        <div class="race-lore">„Водата не пита пътя — тя го създава."</div>
+      </div>
+    </div>
+
+    <!-- ЛУНОСВЕТНИ — ОРДЕН -->
+    <div class="race-card order-card" style="--race-color:var(--moon);--race-bg:rgba(200,192,232,0.08)">
+      <div class="race-header">
+        <div class="race-icon">✨</div>
+        <div>
+          <div class="faction-badge order">◈ Орден на Вала</div>
+          <div class="race-name">Луносветните</div>
+          <div class="race-tagline">Родени при пълнолуние, видими само нощем</div>
+        </div>
+        <div class="race-resource-pill" style="color:var(--mana);border-color:var(--mana)">МАНА + ФОКУС</div>
+      </div>
+      <div class="race-body">
+        <div class="race-stat-block">
+          <h4>Характеристики</h4>
+          <div class="stat-bars">
+            <div class="stat-row"><span class="stat-label">Сила</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:50%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Ловкост</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:75%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Издръжл.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:45%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Лунна Магия</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">Трансформ.</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:92%"></div></div></div>
+          </div>
+        </div>
+        <div class="race-stat-block">
+          <h4>Умения по ниво</h4>
+          <ul>
+            <li>Нв. 1 — Лунен Лъч</li>
+            <li>Нв. 10 — Лунна Форма (нощем)</li>
+            <li>Нв. 20 — Звезден Дъжд</li>
+            <li>Нв. 40 — Фаза-скок (телепорт)</li>
+            <li>Нв. 60 — Пълнолунна Ярост</li>
+            <li>Нв. 80 — Лунен Апокалипсис</li>
+            <li>Нв. 100 — Небесна Трансценденция</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Облекло по тири</h4>
+          <ul>
+            <li>1–20 → Лунни одежди (светещи)</li>
+            <li>21–40 → Сребърни лунни кираси</li>
+            <li>41–60 → Звездни доспехи</li>
+            <li>61–80 → Трансформационен облик</li>
+            <li>81–100 → Небесен Регалий на Луната (Орден пурпур)</li>
+          </ul>
+        </div>
+        <div class="race-stat-block">
+          <h4>Расова пасивна</h4>
+          <p>Лунен Цикъл — пълнолуние: +40% статистики; затъмнение: +60% тъмна магия. Срещу Пакта: нощните атаки срещу Феи и Коренни нанасят +15% допълнителна лунна щета.</p>
+        </div>
+        <div class="race-lore">„Слънцето показва света какъв е. Луната показва какъв може да бъде."</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- ПРОГРЕСИЯ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Прогресия · Ниво 1–100</div>
+    <div class="section-line right"></div>
+  </div>
+  <div class="lore-box">
+    <p>Фракционната принадлежност е постоянна — избираш раса при старт и тя определя фракцията ти завинаги. Всяко ниво носи нови умения, оборудване и достъп до нови части от картата. На нв. 100 Пактовите получават титлата „Ефирен Легенда", Орденовите — „Вал-Владетел".</p>
+  </div>
+  <table class="level-table">
+    <thead>
+      <tr><th>Нива</th><th>Тир</th><th>Доспехи</th><th>Маунт</th><th>Ключови Отключвания</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1–10</td>
+        <td><span class="level-tier">Ефирен Новак</span></td>
+        <td>Стартови расови дрехи — природни материали, ясен расов силует без фракционни цветове</td>
+        <td>—</td>
+        <td>Расова стартова зона, базови умения, запознаване с фракционната история</td>
+      </tr>
+      <tr>
+        <td>11–20</td>
+        <td><span class="level-tier">Странник</span></td>
+        <td>Подобрени расови одежди — първи фракционни цветове се появяват (синьо за Пакт, тъмно-огнено за Орден)</td>
+        <td><span class="milestone-tag">✦ Нв. 20 — Расов маунт</span></td>
+        <td>Расов маунт, влизане в PvP зони, старт на фракционна репутация, фракционни куестове</td>
+      </tr>
+      <tr>
+        <td>21–40</td>
+        <td><span class="level-tier">Ефирен Воин</span></td>
+        <td>Занаятчийски брони с вградени фракционни руни — Пакт: кристални, Орден: Вал-руни</td>
+        <td>Втори маунт (Нв. 30 — рядък расов)</td>
+        <td>Достъп до Мъглявия Вал, субкласове (нв.15), фракционни куестове tier 2, данджъни</td>
+      </tr>
+      <tr>
+        <td>41–60</td>
+        <td><span class="level-tier">Ефирен Страж</span></td>
+        <td>Легендарни фракционни доспехи — визуално ясно разграничение: Пактовите светят синьо, Орденовите — огнено</td>
+        <td>Трети маунт (Нв. 50 — епичен фракционен)</td>
+        <td>Ефирен Резонанс tier 2, Ефирни Кули PvP с фракционни бонуси, фракционни рейдове</td>
+      </tr>
+      <tr>
+        <td>61–80</td>
+        <td><span class="level-tier">Ефирен Легионер</span></td>
+        <td>Аспектни фракционни доспехи — частично трансформирани; Пакт: ефирни криле; Орден: Вал-аура</td>
+        <td>Четвърти маунт (Нв. 70 — легендарен)</td>
+        <td>Будителят (рейд), фракционни артефакти, гилдии tier 2, фракционен ранглист старт</td>
+      </tr>
+      <tr>
+        <td>81–100</td>
+        <td><span class="level-tier">Ефирна Легенда / Вал-Владетел</span></td>
+        <td>Пълен расов Регалий — уникален за всяка раса с ясни фракционни ефекти и постоянна аура</td>
+        <td><span class="milestone-tag">✦ Нв. 100 — Фракционен митичен маунт</span></td>
+        <td>Легенда/Владетел титла, Ефирна Завеса зона, фракционен ранглист топ, ексклузивни куестове</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- МАУНТОВЕ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Маунтове · Колекция и Прогресия</div>
+    <div class="section-line right"></div>
+  </div>
+  <div class="lore-box">
+    <p>Маунтовете се отключват от ниво 20. Расовите маунтове са достъпни само за своята раса. Фракционните митични маунтове (нв. 100) са достъпни само за своята фракция — Пактовият не може да яздне Орденовия и обратно. Глобалните маунтове (Будителя) може да ги яздят и двете фракции. Общо над 120 колекционерски маунта.</p>
+  </div>
+  <div class="mounts-grid">
+    <div class="mount-card" style="--race-color:var(--fey)">
+      <div class="mount-name">Звезден Грифон</div>
+      <div class="mount-race">🧚 Феите на Ефира · ✦ Пакт · Нв. 20</div>
+      <div class="mount-desc">Крилато същество от чиста светлинна енергия. Лети на средна височина над терена.</div>
+      <div class="mount-stat">Скорост: <span>+60%</span> · Летене: <span>Да</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--fey)">
+      <div class="mount-name">Небесен Дракон</div>
+      <div class="mount-race">🧚 Феите на Ефира · ✦ Пакт · Нв. 70</div>
+      <div class="mount-desc">Малък ефирен дракон, роден от концентрирана светлинна магия. Пуска искри при полет.</div>
+      <div class="mount-stat">Скорост: <span>+90%</span> · Летене: <span>Да</span> · Тип: <span>Легендарен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--ghost)">
+      <div class="mount-name">Призрачен Кон</div>
+      <div class="mount-race">👻 Призрачните · ◈ Орден · Нв. 20</div>
+      <div class="mount-desc">Полупрозрачен кон от мъгла и спомени. Преминава право през малки препятствия.</div>
+      <div class="mount-stat">Скорост: <span>+65%</span> · Фазиране: <span>Да</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--ghost)">
+      <div class="mount-name">Духовен Левиатан</div>
+      <div class="mount-race">👻 Призрачните · ◈ Орден · Нв. 100</div>
+      <div class="mount-desc">Гигантско морско чудовище от Мъглявия Вал. Потапя играча в Вала за 10 сек.</div>
+      <div class="mount-stat">Скорост: <span>+100%</span> · Летене: <span>Нисколетящ</span> · Тип: <span>Митичен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--troll)">
+      <div class="mount-name">Планински Мамут</div>
+      <div class="mount-race">🧌 Каменните Тролове · ✦ Пакт · Нв. 20</div>
+      <div class="mount-desc">Огромен вълнест мамут с каменни плочи по гърба. Нанася щета при таран.</div>
+      <div class="mount-stat">Скорост: <span>+40%</span> · Щета: <span>+Таран</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--troll)">
+      <div class="mount-name">Живата Скала</div>
+      <div class="mount-race">🧌 Каменните Тролове · ✦ Пакт · Нв. 50</div>
+      <div class="mount-desc">Оживял каменен голем. Бавен но с огромен щит ефект при ездене.</div>
+      <div class="mount-stat">Скорост: <span>+30%</span> · Защита: <span>+25%</span> · Тип: <span>Расов епичен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--root)">
+      <div class="mount-name">Гигантски Лос</div>
+      <div class="mount-race">🌿 Коренните · ✦ Пакт · Нв. 20</div>
+      <div class="mount-desc">Величествен горски лос с рога обвити с мъх и цветя.</div>
+      <div class="mount-stat">Скорост: <span>+55%</span> · Изцеление: <span>Пасивно в гори</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--root)">
+      <div class="mount-name">Ентове Ходещо Дърво</div>
+      <div class="mount-race">🌿 Коренните · ✦ Пакт · Нв. 60</div>
+      <div class="mount-desc">6 метра висока хуманоидна форма от корени. AoE щета при стъпване.</div>
+      <div class="mount-stat">Скорост: <span>+45%</span> · AoE: <span>При стъпване</span> · Тип: <span>Легендарен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--ember)">
+      <div class="mount-name">Лавен Базилиск</div>
+      <div class="mount-race">🔥 Пепелните · ◈ Орден · Нв. 20</div>
+      <div class="mount-desc">Гущер с кожа от застинала лава. Оставя огнени следи по земята при галоп.</div>
+      <div class="mount-stat">Скорост: <span>+58%</span> · Огн. следи: <span>Да</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--ember)">
+      <div class="mount-name">Феникс</div>
+      <div class="mount-race">🔥 Пепелните · ◈ Орден · Нв. 80</div>
+      <div class="mount-desc">Птицата от пламък. При смърт на ездача — Фениксът се самовзривява за AoE щета.</div>
+      <div class="mount-stat">Скорост: <span>+95%</span> · Летене: <span>Да</span> · Тип: <span>Легендарен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--tidal)">
+      <div class="mount-name">Акула-риф</div>
+      <div class="mount-race">🌊 Тидалите · ✦ Пакт · Нв. 20</div>
+      <div class="mount-desc">Огромна акула — по-бавна на суша, абсолютна скорост под вода.</div>
+      <div class="mount-stat">Скорост: <span>+55% / +80% вода</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--tidal)">
+      <div class="mount-name">Кракен (малък)</div>
+      <div class="mount-race">🌊 Тидалите · ✦ Пакт · Нв. 100</div>
+      <div class="mount-desc">Октопод-монстър от дълбините. Ужасява Орденовите играчи в морски зони.</div>
+      <div class="mount-stat">Скорост: <span>+35% / +120% вода</span> · Тип: <span>Митичен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--bone)">
+      <div class="mount-name">Скелетен Дракон</div>
+      <div class="mount-race">🦴 Пустошниците · ◈ Орден · Нв. 20</div>
+      <div class="mount-desc">Оживял скелет на дракон. Имунен към уловки, ниско плаване над земята.</div>
+      <div class="mount-stat">Скорост: <span>+60%</span> · Имунитет: <span>Ловани</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--bone)">
+      <div class="mount-name">Лич-Колесница</div>
+      <div class="mount-race">🦴 Пустошниците · ◈ Орден · Нв. 60</div>
+      <div class="mount-desc">Колесница с 4 скелетни коня. Пасивно генерира Рунна Сила при движение.</div>
+      <div class="mount-stat">Скорост: <span>+70%</span> · Рунна рег.: <span>+2/сек</span> · Тип: <span>Расов легендарен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--moon)">
+      <div class="mount-name">Лунен Лос-Елен</div>
+      <div class="mount-race">✨ Луносветните · ◈ Орден · Нв. 20</div>
+      <div class="mount-desc">Бял елен с рога от лунна светлина. Нощем невидим за Пактовите играчи.</div>
+      <div class="mount-stat">Скорост: <span>+65%</span> · Стелт (нощ): <span>Да</span> · Тип: <span>Расов основен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--moon)">
+      <div class="mount-name">Звезден Кит</div>
+      <div class="mount-race">✨ Луносветните · ◈ Орден · Нв. 100</div>
+      <div class="mount-desc">Летящ небесен кит от звездна материя. Само нощем, изчезва при изгрев.</div>
+      <div class="mount-stat">Скорост: <span>+110%</span> · Летене: <span>Да (само нощ)</span> · Тип: <span>Митичен</span></div>
+    </div>
+    <!-- ФРАКЦИОННИ МИТИЧНИ -->
+    <div class="mount-card" style="--race-color:var(--pact)">
+      <div class="mount-name">Ефирен Страж на Завесата</div>
+      <div class="mount-race">✦ САМО Пакт на Ефира · Нв. 100 + финален рейд</div>
+      <div class="mount-desc">Огромен кристален лъв от чиста ефирна енергия. Символ на абсолютната защита. Само Пактови играчи могат да го получат — Орденовите играчи го виждат само като враг.</div>
+      <div class="mount-stat">Скорост: <span>+115%</span> · Летене: <span>Да</span> · Тип: <span>Фракционен Митичен</span></div>
+    </div>
+    <div class="mount-card" style="--race-color:var(--order)">
+      <div class="mount-name">Вал-Дракон на Слиянието</div>
+      <div class="mount-race">◈ САМО Орден на Вала · Нв. 100 + финален рейд</div>
+      <div class="mount-desc">Дракон наполовина реалност — наполовина мъгла. Само Орденови играчи могат да го получат — Пактовите го виждат само като тъмна заплаха.</div>
+      <div class="mount-stat">Скорост: <span>+115%</span> · Фазиране: <span>Да</span> · Тип: <span>Фракционен Митичен</span></div>
+    </div>
+    <!-- ГЛОБАЛЕН -->
+    <div class="mount-card" style="--race-color:var(--gold)">
+      <div class="mount-name">Ефирен Дракон на Завесата</div>
+      <div class="mount-race">Всички раси · Нв. 100 · Будителят финал</div>
+      <div class="mount-desc">Единственият маунт, достъпен и за двете фракции — наградата за победата над Будителя, единственият общ враг. Само 1% от играчите го имат. Светещо злато.</div>
+      <div class="mount-stat">Скорост: <span>+120%</span> · Летене: <span>Да</span> · Тип: <span>Глобален Митичен</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- ВАЛУТА -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Валута и Икономика</div>
+    <div class="section-line right"></div>
+  </div>
+  <div class="currency-grid">
+    <div class="currency-card">
+      <div class="currency-symbol">⬡</div>
+      <div class="currency-name">Ефирни Кристали</div>
+      <div class="currency-desc">Основна неутрална валута — споделена от двете фракции. Печели се от куестове, битки и продажби. Използва се за ремонти, обикновена екипировка и консумативи.</div>
+    </div>
+    <div class="currency-card">
+      <div class="currency-symbol">◈</div>
+      <div class="currency-name">Вал-Есенция</div>
+      <div class="currency-desc">Тъмна валута от Мъглявия Вал. Орденът я добива +25% по-лесно. Пактът трябва да влиза в Резонанс. Нужна за рунни надграждания и Вал-предмети.</div>
+    </div>
+    <div class="currency-card">
+      <div class="currency-symbol">✦</div>
+      <div class="currency-name">Ефирни Жетони</div>
+      <div class="currency-desc">Премиум валута. Само визуални предимства. Фракционните козметики са различни — Пакт купува само сини/кристални, Орден — само тъмни/огнени козметики.</div>
+    </div>
+    <div class="currency-card">
+      <div class="currency-symbol">⚔</div>
+      <div class="currency-name">Слава</div>
+      <div class="currency-desc">PvP валута — печелена от убийства на врагове от другата фракция, арени и обсади. Пактова Слава и Орденова Слава са отделни — не се обменят помежду си.</div>
+    </div>
+    <div class="currency-card">
+      <div class="currency-symbol">🌿</div>
+      <div class="currency-name">Природни Талисмани</div>
+      <div class="currency-desc">Рядка валута от рейдове и природни зони. Пактът я добива по-лесно в горски зони. Необходима за Коренни маунтове и легендарни занаятчийски рецепти.</div>
+    </div>
+    <div class="currency-card">
+      <div class="currency-symbol">☽</div>
+      <div class="currency-name">Лунни Монети</div>
+      <div class="currency-desc">Само в пълнолунни нощи. Луносветните (Орден) добиват ×2. Разменят се за лунни трансформации и редки маунтове — достъпни за двете фракции, но бонусите са Орденови.</div>
+    </div>
+  </div>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- КУЕСТОВЕ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Куестова Система</div>
+    <div class="section-line right"></div>
+  </div>
+  <div class="lore-box">
+    <p>Etherborn предлага над 1200 куеста. Главните куестове са напълно различни за двете фракции — Пактът следва пътя на поправянето на Ефирната Завеса, Орденът — пътя на нейното окончателно разрушаване. Рейдовете и данджъните са неутрални, но с различна перспектива.</p>
+  </div>
+  <div class="quest-grid">
+    <div class="quest-card" style="--quest-color:var(--pact)">
+      <div class="quest-type">✦ Главни Куестове · Пакт на Ефира</div>
+      <div class="quest-name">Веригата на Ефира</div>
+      <div class="quest-desc">120+ мисии — Пактът търси начин да поправи Ефирната Завеса и да изолира Мъглявия Вал. Разклонява се спрямо расата. Главен антагонист: Орденът и Будителят.</div>
+      <div class="quest-reward">Награди: <span>Пактови умения</span> · <span>Ефирен Кристал (чист)</span> · <span>Пактов маунт tier 2</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--order)">
+      <div class="quest-type">◈ Главни Куестове · Орден на Вала</div>
+      <div class="quest-name">Пробуждането на Вала</div>
+      <div class="quest-desc">120+ мисии — Орденът търси начин да разруши Завесата и да слее двата свята. Разклонява се спрямо расата. Главен антагонист: Пактът и Ефирните Пазители.</div>
+      <div class="quest-reward">Награди: <span>Орденови умения</span> · <span>Вал-Есенция</span> · <span>Орденов маунт tier 2</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--fey)">
+      <div class="quest-type">✦ Расови Куестове</div>
+      <div class="quest-name">Тайната на Острова (пример: Феи)</div>
+      <div class="quest-desc">40+ уникални куеста за всяка раса. Разкриват защо точно тази раса е избрала своята фракция и каква лична история стои зад нейното участие в конфликта.</div>
+      <div class="quest-reward">Награди: <span>Расов регалий</span> · <span>Расови умения</span> · <span>Фракционна репутация</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--ember)">
+      <div class="quest-type">⚔ Военни Куестове · Фракционни</div>
+      <div class="quest-name">Обсадата на Ефирния Портал</div>
+      <div class="quest-desc">Верижни PvP мисии срещу другата фракция — завземане на кули, убийство на вражески командири, защита на бази. Пактът защитава Ефирни Кули, Орденът — Вал-кули.</div>
+      <div class="quest-reward">Награди: <span>Слава</span> · <span>Фракционни PvP доспехи</span> · <span>Фракционна репутация</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--root)">
+      <div class="quest-type">🌿 Занаятчийски Куестове</div>
+      <div class="quest-name">Ковачницата на Вала</div>
+      <div class="quest-desc">Ковачество, Алхимия, Рунопис, Горска магия, Некромантия. Достъпни за двете фракции, но рецептите за фракционно оборудване са уникални за всяка страна.</div>
+      <div class="quest-reward">Награди: <span>Рецепти</span> · <span>Уникални предмети</span> · <span>Ефирни Кристали</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--ghost)">
+      <div class="quest-type">👻 Куестове на Мъглявия Вал</div>
+      <div class="quest-name">Забравените Гласове</div>
+      <div class="quest-desc">Достъпни за двете фракции с различна перспектива. Орденът ги изпълнява лесно (родни са там). Пактът ги изпълнява по-трудно, но получава +15% Вал-Есенция бонус.</div>
+      <div class="quest-reward">Награди: <span>Вал-Есенция</span> · <span>Духовни умения</span> · <span>Рядко оборудване</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--moon)">
+      <div class="quest-type">☽ Лунни Куестове</div>
+      <div class="quest-name">Ритуалите на Пълнолунието</div>
+      <div class="quest-desc">Само в пълнолунни нощи. Луносветните (Орден) имат двойна скорост на изпълнение. Другите раси могат да участват, но по-бавно. Появяват се веднъж на 3 реални дни.</div>
+      <div class="quest-reward">Награди: <span>Лунни Монети</span> · <span>Лунни трансформации</span> · <span>Рядък маунт</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--tidal)">
+      <div class="quest-type">🌊 Потопени Куестове</div>
+      <div class="quest-name">Градовете под Вълните</div>
+      <div class="quest-desc">Тидалите (Пакт) имат пълно предимство тук. Орденовите трябват магически дихателни чарове и са под постоянна опасност от Тидали в техни води.</div>
+      <div class="quest-reward">Награди: <span>Коралова екипировка</span> · <span>Водни умения</span> · <span>Дълбоководен маунт</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--gold2)">
+      <div class="quest-type">★ Легендарни Куестове · Неутрални</div>
+      <div class="quest-name">Будителят — Общият Враг</div>
+      <div class="quest-desc">Нв. 80+. Единствените куестове, при които Пакт и Орден работят заедно. Будителят е заплаха и за двете фракции. PvP е деактивирано за тази мисия.</div>
+      <div class="quest-reward">Награди: <span>Глобален митичен маунт</span> · <span>Легенда/Владетел титла</span> · <span>50,000 Кристали</span></div>
+    </div>
+    <div class="quest-card" style="--quest-color:var(--bone)">
+      <div class="quest-type">🦴 Ежедневни и Седмични</div>
+      <div class="quest-name">Пулсът на Etherborn</div>
+      <div class="quest-desc">15+ дневни и 5 седмични на ротация — различни за двете фракции. Включват: добиване на ресурси, убийства на врагове от другата фракция, рейд участие, изследване.</div>
+      <div class="quest-reward">Награди: <span>Ефирни Кристали</span> · <span>Вал-Есенция</span> · <span>Сезонни коинове</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="ornament">— ✦ —</div>
+
+<!-- МЕХАНИКИ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-line"></div>
+    <div class="section-title">Ключови Механики</div>
+    <div class="section-line right"></div>
+  </div>
+  <div class="mechanic-grid">
+    <div class="mechanic-card">
+      <div class="mechanic-icon">⚔</div>
+      <div class="mechanic-name">Фракционен PvP</div>
+      <div class="mechanic-desc">Пактът и Орденът са постоянно враждебни в спорни зони. Неутралните зони (Ефирния Праг) са забранени за PvP — можеш да търгуваш с враговете си, но не и да ги убиваш. Не можеш никога да атакуваш съфракционен играч.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">⟁</div>
+      <div class="mechanic-name">Ефирен Резонанс</div>
+      <div class="mechanic-desc">Всеки герой може временно да прехвърли съществуването си в Мъглявия Вал — ставаш полу-призрак, виждаш скрити врагове, преминаваш през стени, но не можеш да атакуваш физически. Зарежда се за 90 сек.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">🌒</div>
+      <div class="mechanic-name">Динамичен Ден/Нощ цикъл</div>
+      <div class="mechanic-desc">Нощем наградите са двойни, но опасността е максимална. Орденовите Луносветни са невидими нощем. Пактовите Феи са по-силни при изгрев. Пепелните (Орден) губят 10% денем — слаба страна на фракцията.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">☠</div>
+      <div class="mechanic-name">Смъртта не е Край</div>
+      <div class="mechanic-desc">При смърт — 60 сек. в Мъглавия Вал. Виждаш битката и помагаш на съфракционни играчи. Орденовите Пустошници могат да привикат починал съюзник обратно веднъж на 10 мин.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">🏰</div>
+      <div class="mechanic-name">Фракционни Кули</div>
+      <div class="mechanic-desc">12 Ефирни Кули по картата. Пактът контролира светлите, Орденът — тъмните. Превземането на вражеска кула дава +15% бонус на цялата фракция в зоната. Обсадата трае 10 мин.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">🌍</div>
+      <div class="mechanic-name">Живи Светове</div>
+      <div class="mechanic-desc">Мъглата поглъща реални части от картата. Орденът може да ускори процеса с ритуали. Пактът трябва да защитава. Ако Пактов град потъне — Орденът получава контрол за седмица.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">🤝</div>
+      <div class="mechanic-name">Будителят — Задължително Примирие</div>
+      <div class="mechanic-desc">Веднъж седмично Будителят заплашва и двете фракции. За 90 мин. PvP е деактивирано в Ефирната Завеса. Единственото задължително примирие. Фракциите споделят рейд лут по равно.</div>
+    </div>
+    <div class="mechanic-card">
+      <div class="mechanic-icon">🎵</div>
+      <div class="mechanic-name">Адаптивен Звук</div>
+      <div class="mechanic-desc">Всяка фракция има своя тема — Пактът: оркестрова светлинна музика; Орденът: тъмен изкривен саундтрак. При срещата на фракциите двете теми се смесват динамично в бойна симфония.</div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-footer">
+  ETHERBORN · ВОЙНАТА НА МИРИТЕ · GDD v2.0 · ПАКТ НА ЕФИРА ✦ VS ◈ ОРДЕН НА ВАЛА · ВСИЧКИ ПРАВА ЗАПАЗЕНИ
+</div>
+
+</div>
+</body>
+</html>
